@@ -1,0 +1,9 @@
+UI--UrlEdit{
+    min-height: 32px;
+    max-height: 32px;
+    min-width: 100px;
+    border-radius: 5px;
+    border-width: 1;
+    border-style: solid;
+    border-color: darkGrey;
+}

@@ -1,0 +1,42 @@
+UI--NavBar{
+    background: rgb(237,238,239);
+    min-height: 60px;
+    max-height: 60px;
+}
+
+#navbar_btn_back,
+#navbar_btn_forward,
+#navbar_btn_reload,
+#navbar_btn_aggents,
+#navbar_btn_sessions,
+#navbar_btn_proxies,
+#navbar_btn_users,
+#navbar_btn_settings{
+    min-width: 32px;
+    max-width: 32px;
+    min-height: 32px;
+    max-height: 32px;
+    border: none;
+    border-style: none;
+}
+
+/*Navigation buttons configuration*/
+#navbar_btn_back{background-image: url(:/icons/btn_back.svg);}
+#navbar_btn_forward{background-image: url(:/icons/btn_forward.svg);}
+#navbar_btn_reload{background-image: url(:/icons/btn_reload.svg);}
+
+/*Settings buttons configuration*/
+#navbar_btn_aggents{background-image: url(:/icons/icon_agent_disabled.svg);}
+#navbar_btn_aggents:checked{background-image: url(:/icons/icon_agent_enabled.svg);}
+
+#navbar_btn_sessions{background-image: url(:/icons/icon_session_disabled.svg);}
+#navbar_btn_sessions:checked{background-image: url(:/icons/icon_session_enabled.svg);}
+
+#navbar_btn_proxies{background-image: url(:/icons/icon_proxy_disabled.svg);}
+#navbar_btn_proxies:checked{background-image: url(:/icons/icon_proxy_enabled.svg);}
+
+#navbar_btn_users{background-image: url(:/icons/icon_user_disabled.svg);}
+#navbar_btn_users:checked{background-image: url(:/icons/icon_user_enabled.svg);}
+
+#navbar_btn_settings{background-image: url(:/icons/icon_settings_disabled.svg);}
+#navbar_btn_settings:checked{background-image: url(:/icons/icon_settings_enabled.svg);}

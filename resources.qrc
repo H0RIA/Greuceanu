@@ -1,0 +1,46 @@
+<RCC>
+    <qresource prefix="/graphics"/>
+    <qresource prefix="/icons">
+        <file alias="avatar.svg">graphics/icons/avatar.svg</file>
+        <file alias="btn_back.svg">graphics/icons/btn_back.svg</file>
+        <file alias="btn_forward.svg">graphics/icons/btn_forward.svg</file>
+        <file alias="btn_plus.svg">graphics/icons/btn_plus.svg</file>
+        <file alias="btn_reload.svg">graphics/icons/btn_reload.svg</file>
+        <file alias="btn_star.svg">graphics/icons/btn_star.svg</file>
+        <file alias="icon_add_disabled.svg">graphics/icons/icon_add_disabled.svg</file>
+        <file alias="icon_add_transparent.svg">graphics/icons/icon_add_transparent.svg</file>
+        <file alias="icon_agent_disabled.svg">graphics/icons/icon_agent_disabled.svg</file>
+        <file alias="icon_agent_enabled.svg">graphics/icons/icon_agent_enabled.svg</file>
+        <file alias="icon_check.svg">graphics/icons/icon_check.svg</file>
+        <file alias="icon_edit_disabled.svg">graphics/icons/icon_edit_disabled.svg</file>
+        <file alias="icon_edit_transparent.svg">graphics/icons/icon_edit_transparent.svg</file>
+        <file alias="icon_open_disabled.svg">graphics/icons/icon_open_disabled.svg</file>
+        <file alias="icon_open_transparent.svg">graphics/icons/icon_open_transparent.svg</file>
+        <file alias="icon_proxy_disabled.svg">graphics/icons/icon_proxy_disabled.svg</file>
+        <file alias="icon_proxy_enabled.svg">graphics/icons/icon_proxy_enabled.svg</file>
+        <file alias="icon_remove_disabled.svg">graphics/icons/icon_remove_disabled.svg</file>
+        <file alias="icon_remove.svg">graphics/icons/icon_remove.svg</file>
+        <file alias="icon_save_disabled.svg">graphics/icons/icon_save_disabled.svg</file>
+        <file alias="icon_save_transparent.svg">graphics/icons/icon_save_transparent.svg</file>
+        <file alias="icon_search.svg">graphics/icons/icon_search.svg</file>
+        <file alias="icon_session_disabled.svg">graphics/icons/icon_session_disabled.svg</file>
+        <file alias="icon_session_enabled.svg">graphics/icons/icon_session_enabled.svg</file>
+        <file alias="icon_settings_disabled.svg">graphics/icons/icon_settings_disabled.svg</file>
+        <file alias="icon_settings_enabled.svg">graphics/icons/icon_settings_enabled.svg</file>
+        <file alias="icon_upload.svg">graphics/icons/icon_upload.svg</file>
+        <file alias="icon_user_disabled.svg">graphics/icons/icon_user_disabled.svg</file>
+        <file alias="icon_user_enabled.svg">graphics/icons/icon_user_enabled.svg</file>
+    </qresource>
+    <qresource prefix="/themes">
+        <file alias="mainwindow.css">mainwindow.css</file>
+        <file alias="tabbar.css">tabbar.css</file>
+        <file alias="navbar.css">navbar.css</file>
+        <file alias="url_edit.css">url_edit.css</file>
+        <file alias="menu_view.css">menu_view.css</file>
+        <file alias="menu_agents.css">menu_agents.css</file>
+        <file alias="menu_proxies.css">menu_proxies.css</file>
+        <file alias="menu_settings.css">menu_settings.css</file>
+        <file alias="menu_sessions.css">menu_sessions.css</file>
+        <file alias="menu_accounts.css">menu_accounts.css</file>
+    </qresource>
+</RCC>

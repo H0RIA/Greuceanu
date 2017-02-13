@@ -1,0 +1,50 @@
+UI--MenuView{
+    background: white;
+    min-width: 317px;
+    max-width: 317px;
+}
+
+#menu_view_btn_save,
+#menu_view_btn_open,
+#menu_view_btn_add,
+#menu_view_icon,
+#menu_view_icon_agents,
+#menu_view_icon_proxies,
+#menu_view_icon_sessions,
+#menu_view_icon_settings,
+#menu_view_icon_accounts{
+    min-width: 32px;
+    max-width: 32px;
+    min-height: 32px;
+    max-height: 32px;
+
+    /*border: none;
+    border-style: none;*/
+}
+
+#menu_view_icon_agents{background-image: url(:/icons/icon_agent_disabled.svg);}
+#menu_view_icon_proxies{background-image: url(:/icons/icon_proxy_disabled.svg);}
+#menu_view_icon_sessions{background-image: url(:/icons/icon_session_disabled.svg);}
+#menu_view_icon_settings{background-image: url(:/icons/icon_settings_disabled.svg);}
+#menu_view_icon_accounts{background-image: url(:/icons/icon_user_disabled.svg);}
+
+#menu_view_btn_save{
+    border-image: url(:/icons/icon_save_disabled.svg);
+    background: red;
+}
+
+#menu_view_btn_open{background-image: url(:/icons/icon_open_disabled.svg);}
+#menu_view_btn_add{background-image: url(:/icons/icon_add_disabled.svg);}
+
+#top_background{
+    background: rgb(232, 234, 235);
+    max-height: 50px;
+}
+
+#menu_view_title{
+    min-height: 30px;
+    max-height: 30px;
+    font-size: 22px;
+    color: rgb(82,83,84);
+    background: rgb(232, 234, 235);
+}
