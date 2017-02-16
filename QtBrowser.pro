@@ -47,7 +47,8 @@ SOURCES += main.cpp\
     ui/sidemenu/menu_sessions.cpp \
     ui/sidemenu/menu_accounts.cpp \
     ui/sidemenu/menu_proxies.cpp \
-    ui/sidemenu/menu_settings.cpp
+    ui/sidemenu/menu_settings.cpp \
+    data/agent.cpp
 
 HEADERS  += \
     base.h \
