@@ -24,6 +24,17 @@ Proxy::Proxy(const Proxy& proxy)
         ,m_LastStatus(proxy.LastStatus())
 {}
 
+Proxy::Proxy(const QUuid& proxyId)
+    :   QObject(nullptr)
+        ,m_Id(proxyId)
+        ,m_Address()
+        ,m_UserName()
+        ,m_UserPass()
+        ,m_Port()
+        ,m_LastCheck()
+        ,m_LastStatus()
+{}
+
 Proxy::~Proxy(){}
 
 Proxy&

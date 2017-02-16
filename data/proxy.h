@@ -52,6 +52,7 @@ namespace Data
         public:
             Proxy(QObject* parent = nullptr);
             Proxy(const Proxy& proxy);
+            Proxy(const QUuid& proxyId);
             virtual ~Proxy();
 
             Proxy& operator=(const Proxy& proxy);

@@ -49,7 +49,8 @@ SOURCES += main.cpp\
     ui/sidemenu/menu_proxies.cpp \
     ui/sidemenu/menu_settings.cpp \
     data/agent.cpp \
-    data/user.cpp
+    data/user.cpp \
+    data/proxy_checker.cpp
 
 HEADERS  += \
     base.h \
@@ -84,7 +85,8 @@ HEADERS  += \
     ui/sidemenu/menu_proxies.h \
     ui/sidemenu/menu_settings.h \
     ui/sidemenu/model_agents.h \
-    ui/sidemenu/model_proxies.h
+    ui/sidemenu/model_proxies.h \
+    data/proxy_checker.h
 
 RESOURCES += \
     resources.qrc
