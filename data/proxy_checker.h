@@ -76,7 +76,7 @@ namespace Data
 
         protected:
             void testAllProxiesAtOnce();
-            void testProxiesOneByOne();
+            void testNextProxy();
             void testProxiesInChunksOf(int chunkSize);
 
             ProxyChecker::ProxyTestInfo* findProxy(QNetworkReply* reply);

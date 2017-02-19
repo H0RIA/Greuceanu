@@ -9,21 +9,21 @@ int main(int argc, char *argv[])
     w.show();
 
     Data::ProxyChecker* checker = new Data::ProxyChecker(&w);
-    checker->setSimultaneousCount(-1);
+//    checker->setSimultaneousCount(-1);
 
-//    {
-//        Data::Proxy proxy;
-//        proxy.setAddress("200.229.193.206");
-//        proxy.setPort(3128);
-//        checker->addProxy(proxy);
-//    }
+    {
+        Data::Proxy proxy;
+        proxy.setAddress("200.229.193.206");
+        proxy.setPort(3128);
+        checker->addProxy(proxy);
+    }
 
-//    {
-//        Data::Proxy proxy;
-//        proxy.setAddress("94.242.55.177");
-//        proxy.setPort(8080);
-//        checker->addProxy(proxy);
-//    }
+    {
+        Data::Proxy proxy;
+        proxy.setAddress("94.242.55.177");
+        proxy.setPort(8080);
+        checker->addProxy(proxy);
+    }
 
     {
         Data::Proxy proxy;
