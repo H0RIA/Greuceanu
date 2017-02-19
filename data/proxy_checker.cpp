@@ -56,7 +56,7 @@ ProxyChecker::clearProxies()
 void
 ProxyChecker::testAllProxiesAtOnce()
 {
-    foreach (const ProxyTestInfo& proxy, m_ProxyList) {
+    for (ProxyTestInfo& proxy : m_ProxyList) {
         if(proxy._Proxy.Id().isNull())
             continue;
 
@@ -82,8 +82,8 @@ ProxyChecker::testAllProxiesAtOnce()
 
         if(pReply != nullptr){
             // We'll make a little not so cute cast...
-            const_cast<ProxyTestInfo*>(&proxy)->_pReply = pReply;
-            const_cast<ProxyTestInfo*>(&proxy)->_RunId = m_CurrentRun;
+            proxy._pReply = pReply;
+            proxy._RunId = m_CurrentRun;
 
             connect(pReply, SIGNAL(aboutToClose()), SLOT(onRequest_aboutToClose()));
             connect(pReply, SIGNAL(bytesWritten(qint64)), SLOT(onRequest_bytesWritten(qint64)));
