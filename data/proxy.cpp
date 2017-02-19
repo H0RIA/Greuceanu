@@ -11,10 +11,11 @@ Proxy::Proxy(QObject* parent)
         ,m_Port(0)
         ,m_LastCheck()
         ,m_LastStatus(ProxyStatus::Unknown)
+        ,m_TestUrl(DEFAULT_TEST_URL)
 {}
 
 Proxy::Proxy(const Proxy& proxy)
-    :   QObject(parent())
+    :   QObject()
         ,m_Id(proxy.Id())
         ,m_Address(proxy.Address())
         ,m_UserName(proxy.UserName())
@@ -22,20 +23,31 @@ Proxy::Proxy(const Proxy& proxy)
         ,m_Port(proxy.Port())
         ,m_LastCheck(proxy.LastCheck())
         ,m_LastStatus(proxy.LastStatus())
+        ,m_TestUrl(proxy.TestUrl())
 {}
 
 Proxy::Proxy(const QUuid& proxyId)
-    :   QObject(nullptr)
+    :   QObject()
         ,m_Id(proxyId)
         ,m_Address()
         ,m_UserName()
         ,m_UserPass()
-        ,m_Port()
+        ,m_Port(0)
         ,m_LastCheck()
         ,m_LastStatus()
+        ,m_TestUrl(DEFAULT_TEST_URL)
 {}
 
 Proxy::~Proxy(){}
+
+bool
+Proxy::isValid()const
+{
+    if(m_Address.isEmpty() || m_Port == 0)
+        return false;
+
+    return true;
+}
 
 Proxy&
 Proxy::operator=(const Proxy& proxy)
@@ -47,6 +59,7 @@ Proxy::operator=(const Proxy& proxy)
     m_Port = proxy.Port();
     m_LastCheck = proxy.LastCheck();
     m_LastStatus = proxy.LastStatus();
+    m_TestUrl = proxy.TestUrl();
 
     return *this;
 }

@@ -32,12 +32,11 @@ namespace Data
     class ProxyChecker : public QThread
     {
         Q_OBJECT
-        //Q_DISABLE_COPY(ProxyChecker)
 
         private:
             DECLARE_PROPERTY_GREF(QList<Data::Proxy>, ProxyList)
             DECLARE_PROPERTY(bool, InfiniteLoop)
-            DECLARE_PROPERTY(bool, SimultaneousCount)
+            DECLARE_PROPERTY(int, SimultaneousCount)
             DECLARE_PROPERTY_PTR(QNetworkAccessManager, NetworkAccessMgr)
 
 
@@ -45,7 +44,7 @@ namespace Data
             ProxyChecker(QObject *parent = nullptr);
             virtual ~ProxyChecker();
 
-            virtual void run() override;
+            void run() override;
 
             bool addProxy(const Proxy& proxy);
             bool remProxy(const QUuid& proxyId);
@@ -56,6 +55,11 @@ namespace Data
             void testProxiesOneByOne();
             void testProxiesInChunksOf(int chunkSize);
 
+            Data::Proxy* findProxy(QNetworkReply* reply);
+
+        private:
+            void printDebugProxyData(QNetworkReply* pReply);
+
         protected slots:
             void onNetwork_authenticationRequired(QNetworkReply *reply, QAuthenticator *authenticator);
             void onNetwork_encrypted(QNetworkReply *reply);
@@ -65,6 +69,27 @@ namespace Data
             void onNetwork_preSharedKeyAuthenticationRequired(QNetworkReply *reply, QSslPreSharedKeyAuthenticator *authenticator);
             void onNetwork_proxyAuthenticationRequired(const QNetworkProxy &proxy, QAuthenticator *authenticator);
             void onNetwork_sslErrors(QNetworkReply *reply, const QList<QSslError> &errors);
+
+            void onRequest_downloadProgress(qint64 bytesReceived, qint64 bytesTotal);
+            void onRequest_error(QNetworkReply::NetworkError code);
+            void onRequest_finished();
+            void onRequest_metaDataChanged();
+            void onRequest_sslErrors(const QList<QSslError> & errors);
+            void onRequest_preSharedKeyAuthenticationRequired(QSslPreSharedKeyAuthenticator *authenticator);
+            void onRequest_redirected(const QUrl &url);
+            void onRequest_uploadProgress(qint64 bytesSent, qint64 bytesTotal);
+            void onRequest_encrypted();
+            void onRequest_destroyed(QObject* obj);
+
+            void onRequest_aboutToClose();
+            void onRequest_bytesWritten(qint64 bytes);
+            void onRequest_channelBytesWritten(int channel, qint64 bytes);
+            void onRequest_channelReadyRead(int channel);
+            void onRequest_readChannelFinished();
+            void onRequest_readyRead();
+
+            void onThread_started();
+            void onThread_finished();
 
         signals:
             // Emitted when a run through the list of proxies has ended

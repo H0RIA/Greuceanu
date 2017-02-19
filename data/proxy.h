@@ -27,6 +27,8 @@
 
 #include "base.h"
 
+#define DEFAULT_TEST_URL    "https://www.google.com"
+
 namespace Data
 {
     enum class ProxyStatus
@@ -48,12 +50,16 @@ namespace Data
         DECLARE_PROPERTY(int, Port)
         DECLARE_PROPERTY(QDateTime, LastCheck)
         DECLARE_PROPERTY(ProxyStatus, LastStatus)
+        DECLARE_PROPERTY(QString, TestUrl)
+        DECLARE_PROPERTY_PTR(QNetworkReply, TestReply)
 
         public:
             Proxy(QObject* parent = nullptr);
             Proxy(const Proxy& proxy);
             Proxy(const QUuid& proxyId);
             virtual ~Proxy();
+
+            bool isValid()const;
 
             Proxy& operator=(const Proxy& proxy);
             bool operator==(const Proxy& proxy)const;
