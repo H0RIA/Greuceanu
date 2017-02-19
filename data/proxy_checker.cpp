@@ -8,6 +8,7 @@ ProxyChecker::ProxyChecker(QObject *parent)
         ,m_InfiniteLoop(false)
         ,m_SimultaneousCount(1)
         ,m_pNetworkAccessMgr(nullptr)
+        ,m_CurrentRun(0)
 {
     connect(this, SIGNAL(started()), SLOT(onThread_started()));
     connect(this, SIGNAL(finished()), SLOT(onThread_finished()));
@@ -25,6 +26,8 @@ bool
 ProxyChecker::addProxy(const Proxy& proxy)
 {
     if(!m_ProxyList.contains(proxy)){
+        ProxyTestInfo pti;
+        pti._Proxy = proxy;
         m_ProxyList.append(proxy);
         return true;
     }
@@ -53,30 +56,31 @@ ProxyChecker::clearProxies()
 void
 ProxyChecker::testAllProxiesAtOnce()
 {
-    foreach (const Proxy& proxy, m_ProxyList) {
-        if(proxy.Id().isNull())
+    foreach (const ProxyTestInfo& proxy, m_ProxyList) {
+        if(proxy._Proxy.Id().isNull())
             continue;
 
-        if(!proxy.isValid())
+        if(!proxy._Proxy.isValid())
             continue;
 
         QNetworkProxy qProxy;
-        qProxy.setHostName(proxy.Address());
-        qProxy.setPort(proxy.Port());
-        qProxy.setUser(proxy.UserName());
+        qProxy.setHostName(proxy._Proxy.Address());
+        qProxy.setPort(proxy._Proxy.Port());
+        qProxy.setUser(proxy._Proxy.UserName());
         qProxy.setType(QNetworkProxy::ProxyType::HttpProxy);
         m_pNetworkAccessMgr->setProxy(qProxy);
 
         QNetworkProxy actualProxy = m_pNetworkAccessMgr->proxy();
         qDebug() << "Actual proxy info: " << actualProxy.hostName() << ":" << actualProxy.port();
 
-        QNetworkRequest request(QUrl(proxy.TestUrl()));
+        QNetworkRequest request(QUrl(proxy._Proxy.TestUrl()));
         QNetworkReply* pReply = m_pNetworkAccessMgr->get(request);
         pReply->moveToThread(this->currentThread());
 
         if(pReply != nullptr){
             // We'll make a little not so cute cast...
-            const_cast<Proxy*>(&proxy)->setTestReply(pReply);
+            const_cast<ProxyTestInfo*>(&proxy)->_pReply = pReply;
+            const_cast<ProxyTestInfo*>(&proxy)->_RunId = m_CurrentRun;
 
             connect(pReply, SIGNAL(aboutToClose()), SLOT(onRequest_aboutToClose()));
             connect(pReply, SIGNAL(bytesWritten(qint64)), SLOT(onRequest_bytesWritten(qint64)));
@@ -110,17 +114,17 @@ ProxyChecker::testProxiesInChunksOf(int chunkSize)
     Q_UNUSED(chunkSize)
 }
 
-Data::Proxy*
+ProxyChecker::ProxyTestInfo*
 ProxyChecker::findProxy(QNetworkReply* reply)
 {
-    Data::Proxy* proxy = nullptr;
+    ProxyTestInfo* proxy = nullptr;
 
     if(reply == nullptr)
         return proxy;
 
-    QList<Proxy>::iterator iter;
+    QList<ProxyTestInfo>::iterator iter;
     for(iter = m_ProxyList.begin(); iter != m_ProxyList.end(); iter++){
-        if((*iter).TestReply() == reply){
+        if((*iter)._pReply == reply){
             proxy = &(*iter);
             break;
         }
@@ -129,15 +133,59 @@ ProxyChecker::findProxy(QNetworkReply* reply)
     return proxy;
 }
 
+ProxyChecker::ProxyTestInfo*
+ProxyChecker::findNextProxy()
+{
+    ProxyChecker::ProxyTestInfo*  pti = nullptr;
+
+    for(ProxyChecker::ProxyTestInfo& element : m_ProxyList){
+        if(element._RunId < m_CurrentRun && element._pReply == nullptr){
+            pti = &element;
+            break;
+        }
+    }
+
+    return pti;
+}
+
+int
+ProxyChecker::activeTests()const
+{
+    int result = 0;
+
+    for(const ProxyChecker::ProxyTestInfo& element : m_ProxyList){
+        if(element._pReply != nullptr)
+            result++;
+    }
+
+    return result;
+}
+
 void
 ProxyChecker::printDebugProxyData(QNetworkReply* pReply)
 {
     if(pReply == nullptr)
         return;
 
-    Proxy* proxy = findProxy(pReply);
+    ProxyChecker::ProxyTestInfo* proxy = findProxy(pReply);
     if(proxy != nullptr)
-        qDebug() << "\t\t" << (pReply == nullptr ? "empty" : pReply->request().url().toString()) << " with proxy: " << proxy->Address() << ":" << proxy->Port();
+        qDebug() << "\t\t" << (pReply == nullptr ? "empty" : pReply->request().url().toString()) << " with proxy: " << proxy->_Proxy.Address() << ":" << proxy->_Proxy.Port();
+}
+
+void
+ProxyChecker::newRun()
+{
+    switch(m_SimultaneousCount)
+    {
+    case -1:
+        blockSignals(true);
+        testAllProxiesAtOnce();
+        blockSignals(false);
+        break;
+    default:
+        testProxiesInChunksOf(m_SimultaneousCount);
+        break;
+    }
 }
 
 void
@@ -230,7 +278,7 @@ ProxyChecker::onRequest_finished()
     QNetworkReply* pReply = qobject_cast<QNetworkReply*>(sender());
     printDebugProxyData(pReply);
 
-    Proxy* proxy = findProxy(pReply);
+    ProxyChecker::ProxyTestInfo* proxy = findProxy(pReply);
     if(proxy != nullptr){
         pReply->readAll();
         QVariant httpStatus = pReply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
@@ -238,11 +286,21 @@ ProxyChecker::onRequest_finished()
             qDebug() << "http status: " << httpStatus;
         }
 
-        proxy->setTestReply(nullptr);
         QNetworkReply::NetworkError error = pReply->error();
         qDebug() << error;
 
-        pReply->deleteLater();
+        proxy->_pReply->deleteLater();
+        proxy->_pReply = nullptr;
+
+        ProxyChecker::ProxyTestInfo* nextProxyTest = findNextProxy();
+        if(nextProxyTest == nullptr){
+            // We are at the end of the list
+            if(activeTests() == 0){
+                m_CurrentRun++;
+                msleep(DEFAULT_SLEEP_BETWEEN_RUNS);
+                newRun();
+            }
+        }
     }
 
 }
@@ -375,18 +433,15 @@ ProxyChecker::onThread_started()
         connect(m_pNetworkAccessMgr, SIGNAL(sslErrors(QNetworkReply*,QList<QSslError>)), SLOT(onNetwork_sslErrors(QNetworkReply*,QList<QSslError>)));
     }
 
-    switch(m_SimultaneousCount)
-    {
-    case -1:
-        testAllProxiesAtOnce();
-        break;
-    case 1:
-        testProxiesOneByOne();
-        break;
-    default:
-        testProxiesInChunksOf(m_SimultaneousCount);
-        break;
+    // Restart counting
+    m_CurrentRun = 1;
+    for(ProxyChecker::ProxyTestInfo& p : m_ProxyList){
+        p._RunId = 0;
+        p._pReply->deleteLater();
+        p._pReply = nullptr;
     }
+
+    newRun();
 }
 
 void

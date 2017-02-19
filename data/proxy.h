@@ -51,7 +51,6 @@ namespace Data
         DECLARE_PROPERTY(QDateTime, LastCheck)
         DECLARE_PROPERTY(ProxyStatus, LastStatus)
         DECLARE_PROPERTY(QString, TestUrl)
-        DECLARE_PROPERTY_PTR(QNetworkReply, TestReply)
 
         public:
             Proxy(QObject* parent = nullptr);

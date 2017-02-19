@@ -25,6 +25,8 @@
 #ifndef PROXY_CHECKER_H
 #define PROXY_CHECKER_H
 
+#define DEFAULT_SLEEP_BETWEEN_RUNS      1000     // milliseconds
+
 #include "proxy.h"
 
 namespace Data
@@ -33,12 +35,34 @@ namespace Data
     {
         Q_OBJECT
 
+        typedef struct __ProxyTestInfo{
+            public:
+                __ProxyTestInfo()
+                    :   _Proxy()
+                        ,_pReply(nullptr)
+                        ,_RunId(0)
+                {}
+
+                __ProxyTestInfo(const Data::Proxy& proxy)
+                    :   _Proxy(proxy)
+                        ,_pReply(nullptr)
+                        ,_RunId(0)
+                {}
+
+                Data::Proxy _Proxy;
+                QNetworkReply* _pReply;
+                quint64 _RunId;
+
+                inline bool operator ==(const __ProxyTestInfo& pti)const{return _Proxy.Id() == pti._Proxy.Id();}
+                inline bool operator !=(const __ProxyTestInfo& pti)const{return !(this->operator ==(pti));}
+        }ProxyTestInfo;
+
         private:
-            DECLARE_PROPERTY_GREF(QList<Data::Proxy>, ProxyList)
+            DECLARE_PROPERTY_GREF(QList<ProxyTestInfo>, ProxyList)
             DECLARE_PROPERTY(bool, InfiniteLoop)
             DECLARE_PROPERTY(int, SimultaneousCount)
             DECLARE_PROPERTY_PTR(QNetworkAccessManager, NetworkAccessMgr)
-
+            DECLARE_PROPERTY(quint64, CurrentRun)
 
         public:
             ProxyChecker(QObject *parent = nullptr);
@@ -55,10 +79,13 @@ namespace Data
             void testProxiesOneByOne();
             void testProxiesInChunksOf(int chunkSize);
 
-            Data::Proxy* findProxy(QNetworkReply* reply);
+            ProxyChecker::ProxyTestInfo* findProxy(QNetworkReply* reply);
+            ProxyChecker::ProxyTestInfo* findNextProxy();
+            int activeTests()const;
 
         private:
             void printDebugProxyData(QNetworkReply* pReply);
+            void newRun();
 
         protected slots:
             void onNetwork_authenticationRequired(QNetworkReply *reply, QAuthenticator *authenticator);
