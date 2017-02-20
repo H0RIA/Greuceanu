@@ -56,53 +56,10 @@ ProxyChecker::clearProxies()
 void
 ProxyChecker::testAllProxiesAtOnce()
 {
-    for (ProxyTestInfo& proxy : m_ProxyList) {
-        if(proxy._Proxy.Id().isNull())
-            continue;
-
-        if(!proxy._Proxy.isValid())
-            continue;
-
-        QNetworkProxy qProxy;
-        qProxy.setHostName(proxy._Proxy.Address());
-        qProxy.setPort(proxy._Proxy.Port());
-        qProxy.setUser(proxy._Proxy.UserName());
-        qProxy.setType(QNetworkProxy::ProxyType::HttpProxy);
-        m_pNetworkAccessMgr->setProxy(qProxy);
-
-        QNetworkProxy actualProxy = m_pNetworkAccessMgr->proxy();
-        qDebug() << "Actual proxy info: " << actualProxy.hostName() << ":" << actualProxy.port();
-
-        QNetworkRequest request(QUrl(proxy._Proxy.TestUrl()));
-        QNetworkReply* pReply = m_pNetworkAccessMgr->get(request);
-        if(pReply == nullptr)
-            continue;
-
-        pReply->moveToThread(this->currentThread());
-
-        if(pReply != nullptr){
-            // We'll make a little not so cute cast...
-            proxy._pReply = pReply;
-            proxy._RunId = m_CurrentRun;
-
-            connect(pReply, SIGNAL(aboutToClose()), SLOT(onRequest_aboutToClose()));
-            connect(pReply, SIGNAL(bytesWritten(qint64)), SLOT(onRequest_bytesWritten(qint64)));
-            connect(pReply, SIGNAL(channelBytesWritten(int,qint64)), SLOT(onRequest_channelBytesWritten(int,qint64)));
-            connect(pReply, SIGNAL(channelReadyRead(int)), SLOT(onRequest_channelReadyRead(int)));
-            connect(pReply, SIGNAL(downloadProgress(qint64,qint64)), SLOT(onRequest_downloadProgress(qint64,qint64)));
-            connect(pReply, SIGNAL(encrypted()), SLOT(onRequest_encrypted()));
-            connect(pReply, SIGNAL(error(QNetworkReply::NetworkError)), SLOT(onRequest_error(QNetworkReply::NetworkError)));
-            connect(pReply, SIGNAL(finished()), SLOT(onRequest_finished()));
-            connect(pReply, SIGNAL(metaDataChanged()), SLOT(onRequest_metaDataChanged()));
-            connect(pReply, SIGNAL(preSharedKeyAuthenticationRequired(QSslPreSharedKeyAuthenticator*)), SLOT(onRequest_preSharedKeyAuthenticationRequired(QSslPreSharedKeyAuthenticator*)));
-            connect(pReply, SIGNAL(readChannelFinished()), SLOT(onRequest_readChannelFinished()));
-            connect(pReply, SIGNAL(readyRead()), SLOT(onRequest_readyRead()));
-            connect(pReply, SIGNAL(redirected(QUrl)), SLOT(onRequest_redirected(QUrl)));
-            connect(pReply, SIGNAL(sslErrors(QList<QSslError>)), SLOT(onRequest_sslErrors(QList<QSslError>)));
-            connect(pReply, SIGNAL(uploadProgress(qint64,qint64)), SLOT(onRequest_uploadProgress(qint64,qint64)));
-
-            connect(pReply, SIGNAL(destroyed(QObject*)), SLOT(onRequest_destroyed(QObject*)));
-        }
+    ProxyChecker::ProxyTestInfo* proxy = findNextProxy();
+    while(proxy != nullptr){
+        testNextProxy();
+        proxy = findNextProxy();
     }
 }
 
@@ -156,6 +113,7 @@ ProxyChecker::testNextProxy()
 void
 ProxyChecker::testProxiesInChunksOf(int chunkSize)
 {
+    // Blocking the signals so that no "onRequest_finished()" is triggered before starting to process the next chunk of proxies
     blockSignals(true);
     for(int i = 0; i < chunkSize; i++)
         testNextProxy();
@@ -487,8 +445,10 @@ ProxyChecker::onThread_started()
     m_CurrentRun = 1;
     for(ProxyChecker::ProxyTestInfo& p : m_ProxyList){
         p._RunId = 0;
-        p._pReply->deleteLater();
-        p._pReply = nullptr;
+        if(p._pReply != nullptr){
+            p._pReply->deleteLater();
+            p._pReply = nullptr;
+        }
     }
 
     newRun();
