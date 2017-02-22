@@ -1,4 +1,4 @@
-#include "MainWindow.h"
+#include "mainwindow.h"
 #include "data/proxy_checker.h"
 #include <QApplication>
 
