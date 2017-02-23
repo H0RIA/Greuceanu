@@ -175,7 +175,8 @@ ProxyChecker::printDebugProxyData(QNetworkReply* pReply)
 
     ProxyChecker::ProxyTestInfo* proxy = findProxy(pReply);
     if(proxy != nullptr)
-        qDebug() << "\t\t" << (pReply == nullptr ? "empty" : pReply->request().url().toString()) << " with proxy: " << proxy->_Proxy.Address() << ":" << proxy->_Proxy.Port();
+        qDebug() << "\t\t" << (pReply == nullptr ? "empty" : pReply->request().url().toString())
+                 << " with proxy: " << proxy->_Proxy.Address() << ":" << proxy->_Proxy.Port();
 }
 
 void
@@ -271,7 +272,12 @@ ProxyChecker::onRequest_error(QNetworkReply::NetworkError code)
     qDebug() << __FILE__ << ": " << __LINE__ << " -> " << __FUNCTION__;
 
     QNetworkReply* pReply = qobject_cast<QNetworkReply*>(sender());
-    qDebug() << "\t\tcode: " << code << ": " << pReply->errorString();
+    qDebug() << "\t\tcode: " << (int)code << "-" << (int)pReply->error()  << ": " << pReply->errorString();
+
+    if(code == QNetworkReply::NetworkError::UnknownNetworkError){
+        if(qobject_cast<QAbstractSocket*>(pReply) != nullptr)
+            qDebug() << "socket error: " << qobject_cast<QAbstractSocket*>(pReply)->error();
+    }
 
     printDebugProxyData(pReply);
 }
@@ -310,7 +316,6 @@ ProxyChecker::onRequest_finished()
             testNextProxy();
         }
     }
-
 }
 
 void
