@@ -23,6 +23,11 @@ ProxyChecker::addProxy(const Proxy& proxy)
         ProxyTestInfo pti;
         pti._Proxy = proxy;
         m_ProxyList.append(proxy);
+
+        ProxyTestInfo* ourPti = findProxy(proxy.Id());
+        if(ourPti != nullptr)
+            connect(&(ourPti->_Proxy), SIGNAL(statusChanged(ProxyStatus)), SLOT(onProxy_statusChanged(ProxyStatus)));
+
         return true;
     }
 
@@ -68,9 +73,6 @@ ProxyChecker::testNextProxy()
     qProxy.setType(QNetworkProxy::ProxyType::HttpProxy);
     qProxy.setCapabilities(QNetworkProxy::Capability::TunnelingCapability);
     m_pNetworkAccessMgr->setProxy(qProxy);
-
-    QNetworkProxy actualProxy = m_pNetworkAccessMgr->proxy();
-    qDebug() << "Actual proxy info: " << actualProxy.hostName() << ":" << actualProxy.port();
 
     QNetworkRequest request(QUrl(proxy->_Proxy.TestUrl()));
     request.setRawHeader("User-Agent", "Proxy checker 1.0");
@@ -129,6 +131,22 @@ ProxyChecker::findProxy(QNetworkReply* reply)
     QList<ProxyTestInfo>::iterator iter;
     for(iter = m_ProxyList.begin(); iter != m_ProxyList.end(); iter++){
         if((*iter)._pReply == reply){
+            proxy = &(*iter);
+            break;
+        }
+    }
+
+    return proxy;
+}
+
+ProxyChecker::ProxyTestInfo*
+ProxyChecker::findProxy(const QUuid& id)
+{
+    ProxyTestInfo* proxy = nullptr;
+
+    QList<ProxyTestInfo>::iterator iter;
+    for(iter = m_ProxyList.begin(); iter != m_ProxyList.end(); iter++){
+        if((*iter)._Proxy.Id() == id){
             proxy = &(*iter);
             break;
         }
@@ -200,34 +218,34 @@ ProxyChecker::onNetwork_authenticationRequired(QNetworkReply *reply, QAuthentica
 {
     Q_UNUSED(authenticator)
 
-    PRINT_LOCATION;
-    printDebugProxyData(reply);
+//    PRINT_LOCATION;
+//    printDebugProxyData(reply);
 }
 
 void
 ProxyChecker::onNetwork_encrypted(QNetworkReply *reply)
 {
-    PRINT_LOCATION;
-    printDebugProxyData(reply);
+//    PRINT_LOCATION;
+//    printDebugProxyData(reply);
 }
 
 void
 ProxyChecker::onNetwork_finished(QNetworkReply *reply)
 {
-    PRINT_LOCATION;
-    printDebugProxyData(reply);
+//    PRINT_LOCATION;
+//    printDebugProxyData(reply);
 }
 
 void
 ProxyChecker::onNetwork_networkAccessibleChanged(QNetworkAccessManager::NetworkAccessibility accessible)
 {
-    PRINT_LOCATION << " -> " << accessible;
+//    PRINT_LOCATION << " -> " << accessible;
 }
 
 void
 ProxyChecker::onNetwork_networkSessionConnected()
 {
-    PRINT_LOCATION;
+//    PRINT_LOCATION;
 }
 
 void
@@ -235,23 +253,24 @@ ProxyChecker::onNetwork_preSharedKeyAuthenticationRequired(QNetworkReply *reply,
 {
     Q_UNUSED(authenticator)
 
-    PRINT_LOCATION;
-    printDebugProxyData(reply);
+//    PRINT_LOCATION;
+//    printDebugProxyData(reply);
 }
 
 void
 ProxyChecker::onNetwork_proxyAuthenticationRequired(const QNetworkProxy &proxy, QAuthenticator *authenticator)
 {
     Q_UNUSED(authenticator)
-    PRINT_LOCATION << "\n\t\t" << proxy.hostName() << ":" << proxy.port();
+
+//    PRINT_LOCATION << "\n\t\t" << proxy.hostName() << ":" << proxy.port();
 }
 
 void
 ProxyChecker::onNetwork_sslErrors(QNetworkReply *reply, const QList<QSslError> &errors)
 {
-    PRINT_LOCATION;
+//    PRINT_LOCATION;
+//    printDebugProxyData(reply);
 
-    printDebugProxyData(reply);
     foreach(const QSslError& error, errors)
         qDebug() << "\t\tSSL error: " << error.errorString();
 }
@@ -259,26 +278,26 @@ ProxyChecker::onNetwork_sslErrors(QNetworkReply *reply, const QList<QSslError> &
 void
 ProxyChecker::onRequest_downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
 {
-    PRINT_LOCATION << "\n\t\t" << bytesReceived << " out of " << bytesTotal;
-    printDebugProxyData(qobject_cast<QNetworkReply*>(sender()));
+//    PRINT_LOCATION << "\n\t\t" << bytesReceived << " out of " << bytesTotal;
+//    printDebugProxyData(qobject_cast<QNetworkReply*>(sender()));
 }
 
 void
 ProxyChecker::onRequest_error(QNetworkReply::NetworkError code)
 {
-    QNetworkReply* pReply = qobject_cast<QNetworkReply*>(sender());
+//    QNetworkReply* pReply = qobject_cast<QNetworkReply*>(sender());
 
-    PRINT_LOCATION  << "\n\t\tcode: " << code << ": " << pReply->errorString();
-    printDebugProxyData(pReply);
+//    PRINT_LOCATION  << "\n\t\tcode: " << code << ": " << pReply->errorString();
+//    printDebugProxyData(pReply);
 }
 
 void
 ProxyChecker::onRequest_finished()
 {
-    PRINT_LOCATION;
+//    PRINT_LOCATION;
 
     QNetworkReply* pReply = qobject_cast<QNetworkReply*>(sender());
-    printDebugProxyData(pReply);
+//    printDebugProxyData(pReply);
 
     ProxyChecker::ProxyTestInfo* proxy = findProxy(pReply);
     if(proxy != nullptr){
@@ -303,7 +322,6 @@ ProxyChecker::onRequest_finished()
 
 
         proxy->_Proxy.setLastCheck(QDateTime::currentDateTime());
-        proxy->_Proxy.printStatus();
 
         ProxyChecker::ProxyTestInfo* nextProxyTest = findNextProxy();
         if(nextProxyTest == nullptr){
@@ -322,15 +340,15 @@ ProxyChecker::onRequest_finished()
 void
 ProxyChecker::onRequest_metaDataChanged()
 {
-    PRINT_LOCATION;
-    printDebugProxyData(qobject_cast<QNetworkReply*>(sender()));
+//    PRINT_LOCATION;
+//    printDebugProxyData(qobject_cast<QNetworkReply*>(sender()));
 }
 
 void
 ProxyChecker::onRequest_sslErrors(const QList<QSslError> & errors)
 {
-    PRINT_LOCATION;
-    printDebugProxyData(qobject_cast<QNetworkReply*>(sender()));
+//    PRINT_LOCATION;
+//    printDebugProxyData(qobject_cast<QNetworkReply*>(sender()));
 
     foreach(const QSslError& error, errors)
         qDebug() << "\t\tSSL error: " << error.errorString();
@@ -341,84 +359,94 @@ ProxyChecker::onRequest_preSharedKeyAuthenticationRequired(QSslPreSharedKeyAuthe
 {
     Q_UNUSED(authenticator)
 
-    PRINT_LOCATION;
-    printDebugProxyData(qobject_cast<QNetworkReply*>(sender()));
+//    PRINT_LOCATION;
+//    printDebugProxyData(qobject_cast<QNetworkReply*>(sender()));
 }
 
 void
 ProxyChecker::onRequest_redirected(const QUrl &url)
 {
-    PRINT_LOCATION << "\n\t\t" << url.toString();
-    printDebugProxyData(qobject_cast<QNetworkReply*>(sender()));
+//    PRINT_LOCATION << "\n\t\t" << url.toString();
+//    printDebugProxyData(qobject_cast<QNetworkReply*>(sender()));
 }
 
 void
 ProxyChecker::onRequest_uploadProgress(qint64 bytesSent, qint64 bytesTotal)
 {
-    PRINT_LOCATION << "\n\t\t" << bytesSent << " out of " << bytesTotal;
-    printDebugProxyData(qobject_cast<QNetworkReply*>(sender()));
+//    PRINT_LOCATION << "\n\t\t" << bytesSent << " out of " << bytesTotal;
+//    printDebugProxyData(qobject_cast<QNetworkReply*>(sender()));
 }
 
 void
 ProxyChecker::onRequest_encrypted()
 {
-    PRINT_LOCATION;
-    printDebugProxyData(qobject_cast<QNetworkReply*>(sender()));
+//    PRINT_LOCATION;
+//    printDebugProxyData(qobject_cast<QNetworkReply*>(sender()));
 }
 
 void
 ProxyChecker::onRequest_destroyed(QObject* obj)
 {
-    PRINT_LOCATION;
-    printDebugProxyData(qobject_cast<QNetworkReply*>(obj));
+//    PRINT_LOCATION;
+//    printDebugProxyData(qobject_cast<QNetworkReply*>(obj));
 }
 
 void
 ProxyChecker::onRequest_aboutToClose()
 {
-    PRINT_LOCATION;
-    printDebugProxyData(qobject_cast<QNetworkReply*>(sender()));
+//    PRINT_LOCATION;
+//    printDebugProxyData(qobject_cast<QNetworkReply*>(sender()));
 }
 
 void
 ProxyChecker::onRequest_bytesWritten(qint64 bytes)
 {
-    PRINT_LOCATION << "\n\t\t" << bytes;
-    printDebugProxyData(qobject_cast<QNetworkReply*>(sender()));
+//    PRINT_LOCATION << "\n\t\t" << bytes;
+//    printDebugProxyData(qobject_cast<QNetworkReply*>(sender()));
 }
 
 void
 ProxyChecker::onRequest_channelBytesWritten(int channel, qint64 bytes)
 {
-    PRINT_LOCATION << "\n\t\t" << "channel: " << channel << "; bytes: " << bytes;
-    printDebugProxyData(qobject_cast<QNetworkReply*>(sender()));
+//    PRINT_LOCATION << "\n\t\t" << "channel: " << channel << "; bytes: " << bytes;
+//    printDebugProxyData(qobject_cast<QNetworkReply*>(sender()));
 }
 
 void
 ProxyChecker::onRequest_channelReadyRead(int channel)
 {
-    PRINT_LOCATION << "\n\t\t" << "channel: " << channel;
-    printDebugProxyData(qobject_cast<QNetworkReply*>(sender()));
+//    PRINT_LOCATION << "\n\t\t" << "channel: " << channel;
+//    printDebugProxyData(qobject_cast<QNetworkReply*>(sender()));
 }
 
 void
 ProxyChecker::onRequest_readChannelFinished()
 {
-    PRINT_LOCATION;
-    printDebugProxyData(qobject_cast<QNetworkReply*>(sender()));
+//    PRINT_LOCATION;
+//    printDebugProxyData(qobject_cast<QNetworkReply*>(sender()));
 }
 
 void
 ProxyChecker::onRequest_readyRead()
 {
-    PRINT_LOCATION;
-    printDebugProxyData(qobject_cast<QNetworkReply*>(sender()));
+//    PRINT_LOCATION;
+//    printDebugProxyData(qobject_cast<QNetworkReply*>(sender()));
+}
+
+void
+ProxyChecker::onProxy_statusChanged(ProxyStatus newStatus)
+{
+    Proxy* proxy = qobject_cast<Proxy*>(sender());
+    if(proxy != nullptr){
+        proxy->printStatus();
+        emit proxyStatusChanged(qobject_cast<Proxy*>(sender()), newStatus);
+    }
 }
 
 void
 ProxyChecker::onThread_started()
 {
-    PRINT_LOCATION;
+//    PRINT_LOCATION;
 
     QNetworkProxyFactory::setUseSystemConfiguration(false);
 
@@ -452,5 +480,5 @@ ProxyChecker::onThread_started()
 void
 ProxyChecker::onThread_finished()
 {
-    PRINT_LOCATION;
+//    PRINT_LOCATION;
 }

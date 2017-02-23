@@ -30,6 +30,7 @@
 #define DEFAULT_TEST_URL        "https://www.google.com"
 #define DEFAULT_PROXY_TIMEOUT   5000 // milliseconds
 
+//Q_NAMESPACE(Data)
 namespace Data
 {
     enum class ProxyStatus
@@ -39,6 +40,7 @@ namespace Data
         Testing,    // Running the tests on the proxy
         Unknown     // No tests were ran
     };
+
 
     class Proxy : public QObject
     {
@@ -80,6 +82,9 @@ namespace Data
             ProxyStatus m_LastStatus;
     };
 }
+
+std::ostream& operator<< (std::ostream& stream, const Data::ProxyStatus& val);
+
 
 #endif // PROXY
 

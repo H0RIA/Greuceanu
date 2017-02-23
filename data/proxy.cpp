@@ -1,6 +1,32 @@
+#include <iostream>
 #include "proxy.h"
 
 using namespace Data;
+
+std::ostream& operator<< (std::ostream& stream, const Data::ProxyStatus& val)
+{
+    std::string strValue;
+
+    switch(val)
+    {
+        case ProxyStatus::Active:
+            strValue = "Data::ProxyStatus(Active)";
+            break;
+        case ProxyStatus::Inactive:
+            strValue = "Data::ProxyStatus(Inactive)";
+            break;
+        case ProxyStatus::Testing:
+            strValue = "Data::ProxyStatus(Testing)";
+            break;
+        case ProxyStatus::Unknown:
+            strValue = "Data::ProxyStatus(Unknown)";
+            break;
+    }
+
+    stream << strValue;
+
+    return stream;
+}
 
 Proxy::Proxy(QObject* parent)
     :   QObject(parent)
@@ -72,7 +98,8 @@ Proxy::setLastStatus(ProxyStatus status)
 {
     if(m_LastStatus != status){
         m_LastStatus = status;
-        emit statusChanged(status);
+        if(m_LastStatus != ProxyStatus::Testing)
+            emit statusChanged(status);
     }
 }
 
@@ -117,5 +144,7 @@ Proxy::initializeTimer()
 void
 Proxy::printStatus()
 {
-    qDebug() << "Proxy info: " << m_Address << ":" << m_Port << " -> " << m_LastCheck.toString() << " -> " << (int)m_LastStatus << " -> " << m_LastStatusDescription;
+    std::cerr << "Proxy info: " << m_Address.toLocal8Bit().data() << ":" \
+             << m_Port << " -> " << m_LastCheck.toString().toLocal8Bit().data() << " -> " \
+             << m_LastStatus << " -> " << m_LastStatusDescription.toLocal8Bit().data() << std::endl;
 }

@@ -78,6 +78,7 @@ namespace Data
             void testProxiesInChunksOf(int chunkSize);
 
             ProxyChecker::ProxyTestInfo* findProxy(QNetworkReply* reply);
+            ProxyChecker::ProxyTestInfo* findProxy(const QUuid& id);
             ProxyChecker::ProxyTestInfo* findNextProxy();
             int activeTests()const;
 
@@ -113,6 +114,8 @@ namespace Data
             void onRequest_readChannelFinished();
             void onRequest_readyRead();
 
+            void onProxy_statusChanged(ProxyStatus newStatus);
+
         public slots:
             void onThread_started();
             void onThread_finished();
@@ -120,6 +123,7 @@ namespace Data
         signals:
             // Emitted when a run through the list of proxies has ended
             void finished(int runNumber);
+            void proxyStatusChanged(Proxy* proxy, ProxyStatus newStatus);
     };
 }
 
