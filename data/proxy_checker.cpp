@@ -102,6 +102,7 @@ ProxyChecker::testNextProxy()
         connect(pReply, SIGNAL(uploadProgress(qint64,qint64)), SLOT(onRequest_uploadProgress(qint64,qint64)));
         connect(pReply, SIGNAL(destroyed(QObject*)), SLOT(onRequest_destroyed(QObject*)));
 
+        proxy->_Proxy.setLastStatus(Data::ProxyStatus::Testing);
         connect(proxy->_Proxy.TimeoutTimer(), SIGNAL(timeout()), pReply, SLOT(abort()));
         proxy->_Proxy.TimeoutTimer()->start();
     }
@@ -172,8 +173,7 @@ ProxyChecker::printDebugProxyData(QNetworkReply* pReply)
 
     ProxyChecker::ProxyTestInfo* proxy = findProxy(pReply);
     if(proxy != nullptr)
-        qDebug() << "\t\t" << (pReply == nullptr ? "empty" : pReply->request().url().toString())
-                 << " with proxy: " << proxy->_Proxy.Address() << ":" << proxy->_Proxy.Port();
+        proxy->_Proxy.printStatus();
 }
 
 void
@@ -287,6 +287,23 @@ ProxyChecker::onRequest_finished()
             proxy->_pReply->deleteLater();
             proxy->_pReply = nullptr;
         }
+
+        // Update the status
+        switch(pReply->error())
+        {
+        case QNetworkReply::NetworkError::NoError:
+            proxy->_Proxy.setLastStatus(Data::ProxyStatus::Active);
+            proxy->_Proxy.setLastStatusDescription("No error");
+            break;
+        default:
+            proxy->_Proxy.setLastStatus(Data::ProxyStatus::Inactive);
+            proxy->_Proxy.setLastStatusDescription(pReply->errorString());
+            break;
+        }
+
+
+        proxy->_Proxy.setLastCheck(QDateTime::currentDateTime());
+        proxy->_Proxy.printStatus();
 
         ProxyChecker::ProxyTestInfo* nextProxyTest = findNextProxy();
         if(nextProxyTest == nullptr){

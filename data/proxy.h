@@ -50,7 +50,7 @@ namespace Data
         DECLARE_PROPERTY(QString, UserPass)
         DECLARE_PROPERTY(int, Port)
         DECLARE_PROPERTY(QDateTime, LastCheck)
-        DECLARE_PROPERTY(ProxyStatus, LastStatus)
+        DECLARE_PROPERTY(QString, LastStatusDescription)
         DECLARE_PROPERTY(QString, TestUrl)
         DECLARE_PROPERTY_PTR(QTimer, TimeoutTimer)
 
@@ -62,12 +62,22 @@ namespace Data
 
             bool isValid()const;
 
+            ProxyStatus LastStatus()const;
+            void setLastStatus(ProxyStatus status);
+
             Proxy& operator=(const Proxy& proxy);
             bool operator==(const Proxy& proxy)const;
             bool operator!=(const Proxy& proxy)const;
 
         public slots:
             void initializeTimer();
+            void printStatus();
+
+        signals:
+            void statusChanged(ProxyStatus newStatus);
+
+        private:
+            ProxyStatus m_LastStatus;
     };
 }
 
