@@ -9,7 +9,6 @@ int main(int argc, char *argv[])
     w.show();
 
     Data::ProxyChecker* checker = new Data::ProxyChecker(&w);
-//    checker->setSimultaneousCount(-1);
 
     {
         Data::Proxy proxy;

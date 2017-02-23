@@ -12,7 +12,10 @@ Proxy::Proxy(QObject* parent)
         ,m_LastCheck()
         ,m_LastStatus(ProxyStatus::Unknown)
         ,m_TestUrl(DEFAULT_TEST_URL)
-{}
+        ,m_pTimeoutTimer(nullptr)
+{
+    initializeTimer();
+}
 
 Proxy::Proxy(const Proxy& proxy)
     :   QObject()
@@ -24,7 +27,10 @@ Proxy::Proxy(const Proxy& proxy)
         ,m_LastCheck(proxy.LastCheck())
         ,m_LastStatus(proxy.LastStatus())
         ,m_TestUrl(proxy.TestUrl())
-{}
+        ,m_pTimeoutTimer(nullptr)
+{
+    initializeTimer();
+}
 
 Proxy::Proxy(const QUuid& proxyId)
     :   QObject()
@@ -36,7 +42,10 @@ Proxy::Proxy(const QUuid& proxyId)
         ,m_LastCheck()
         ,m_LastStatus()
         ,m_TestUrl(DEFAULT_TEST_URL)
-{}
+        ,m_pTimeoutTimer(nullptr)
+{
+    initializeTimer();
+}
 
 Proxy::~Proxy(){}
 
@@ -76,3 +85,12 @@ Proxy::operator!=(const Proxy& proxy)const
     return !(this->operator ==(proxy));
 }
 
+void
+Proxy::initializeTimer()
+{
+    if(m_pTimeoutTimer == nullptr)
+        m_pTimeoutTimer = new QTimer();
+
+    m_pTimeoutTimer->setSingleShot(true);
+    m_pTimeoutTimer->setInterval(DEFAULT_PROXY_TIMEOUT);
+}

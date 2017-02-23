@@ -27,7 +27,8 @@
 
 #include "base.h"
 
-#define DEFAULT_TEST_URL    "https://www.google.com"
+#define DEFAULT_TEST_URL        "https://www.google.com"
+#define DEFAULT_PROXY_TIMEOUT   5000 // milliseconds
 
 namespace Data
 {
@@ -35,7 +36,7 @@ namespace Data
     {
         Active,     // Last test ran succeeded
         Inactive,   // Last test ran failed
-        Pending,    // Running the tests on the proxy
+        Testing,    // Running the tests on the proxy
         Unknown     // No tests were ran
     };
 
@@ -51,6 +52,7 @@ namespace Data
         DECLARE_PROPERTY(QDateTime, LastCheck)
         DECLARE_PROPERTY(ProxyStatus, LastStatus)
         DECLARE_PROPERTY(QString, TestUrl)
+        DECLARE_PROPERTY_PTR(QTimer, TimeoutTimer)
 
         public:
             Proxy(QObject* parent = nullptr);
@@ -63,6 +65,9 @@ namespace Data
             Proxy& operator=(const Proxy& proxy);
             bool operator==(const Proxy& proxy)const;
             bool operator!=(const Proxy& proxy)const;
+
+        public slots:
+            void initializeTimer();
     };
 }
 

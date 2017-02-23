@@ -120,6 +120,10 @@
 #include <QLineEdit>
 #include <QResizeEvent>
 
+#ifndef PRINT_LOCATION
+#define PRINT_LOCATION qDebug() << __FILE__ << ": " << __LINE__ << " -> " << __FUNCTION__
+#endif // PRINT_LOCATION
+
 #if (CURRENT_WEBVERSION == WEBVERSION_CHROMIUM)
     #include <QtWebEngineWidgets/QtWebEngineWidgets>
 #else

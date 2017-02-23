@@ -68,8 +68,6 @@ namespace Data
             ProxyChecker(QObject *parent = nullptr);
             virtual ~ProxyChecker();
 
-            void run() override;
-
             bool addProxy(const Proxy& proxy);
             bool remProxy(const QUuid& proxyId);
             void clearProxies();
@@ -115,6 +113,7 @@ namespace Data
             void onRequest_readChannelFinished();
             void onRequest_readyRead();
 
+        public slots:
             void onThread_started();
             void onThread_finished();
 
