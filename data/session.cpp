@@ -18,6 +18,39 @@ Session::Session(const Session& session)
 Session::~Session(){}
 
 void
+Session::addPage(const Data::Page& page)
+{
+    if(m_Pages.contains(page))
+        return;
+
+    m_Pages.append(page);
+}
+
+void
+Session::remPage(const QUuid& pageId)
+{
+    m_Pages.removeOne(Data::Page(pageId));
+}
+
+Data::Page*
+Session::findPage(const QUuid& pageId)
+{
+    Data::Page* page = nullptr;
+
+    if(pageId.isNull())
+        return page;
+
+    for(Data::Page& pageInfo : m_Pages){
+        if(pageInfo.Id() == pageId){
+            page = &pageInfo;
+            break;
+        }
+    }
+
+    return page;
+}
+
+void
 Session::read(const QJsonObject &json)
 {
     m_Id = QUuid::fromRfc4122(json[Core::JSonNames[Core::JSonNameIds::SessionId]].toString().toLocal8Bit());

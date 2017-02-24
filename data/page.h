@@ -41,6 +41,7 @@ namespace Data
 
         public:
             Page();
+            Page(const QUuid& id);
             Page(const Page& page);
             virtual ~Page();
 

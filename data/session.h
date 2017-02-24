@@ -40,6 +40,10 @@ namespace Data
             Session(const Session& session);
             virtual ~Session();
 
+            void addPage(const Data::Page& page);
+            void remPage(const QUuid& pageId);
+            Data::Page* findPage(const QUuid& pageId);
+
             void read(const QJsonObject &json) override;
             void write(QJsonObject &json)const override;
 
