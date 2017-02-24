@@ -25,22 +25,23 @@
 #ifndef SESSION
 #define SESSION
 
-#include "base.h"
+#include "page.h"
 
 namespace Data
 {
-    class Page;
-
-    class Session
+    class Session : public IJsonInterface
     {
         DECLARE_PROPERTY(QUuid, Id)
         DECLARE_PROPERTY(QString, Name)
-        DECLARE_PROPERTY(QList<Data::Page*>, Pages)
+        DECLARE_PROPERTY(QList<Data::Page>, Pages)
 
         public:
             Session();
             Session(const Session& session);
             virtual ~Session();
+
+            void read(const QJsonObject &json) override;
+            void write(QJsonObject &json)const override;
 
             Session& operator=(const Session& session);
             bool operator==(const Session& session)const;

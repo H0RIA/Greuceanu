@@ -29,7 +29,7 @@
 
 namespace Data
 {
-    class Page
+    class Page : public IJsonInterface
     {
         DECLARE_PROPERTY(QUuid, Id)
         DECLARE_PROPERTY(QString, Name)
@@ -43,6 +43,9 @@ namespace Data
             Page();
             Page(const Page& page);
             virtual ~Page();
+
+            void read(const QJsonObject &json) override;
+            void write(QJsonObject &json)const override;
 
             Page& operator=(const Page& page);
             bool operator==(const Page& page)const;

@@ -29,7 +29,7 @@
 
 namespace Data
 {
-    class User
+    class User : public IJsonInterface
     {
         DECLARE_PROPERTY(QUuid, Id)
         DECLARE_PROPERTY(QString, UName)
@@ -41,6 +41,9 @@ namespace Data
             User();
             User(const User& user);
             virtual ~User();
+
+            void read(const QJsonObject &json) override;
+            void write(QJsonObject &json)const override;
 
             User& operator=(const User& user);
             bool operator==(const User& user)const;

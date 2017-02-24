@@ -29,7 +29,7 @@
 
 namespace Data
 {
-    class Agent
+    class Agent : public IJsonInterface
     {
         DECLARE_PROPERTY(QUuid, Id)
         DECLARE_PROPERTY(QString, Alias)
@@ -39,6 +39,9 @@ namespace Data
             Agent();
             Agent(const Agent& agent);
             virtual ~Agent();
+
+            void read(const QJsonObject &json) override;
+            void write(QJsonObject &json)const override;
 
             Agent& operator=(const Agent& agent);
             bool operator==(const Agent& agent)const;

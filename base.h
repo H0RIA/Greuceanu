@@ -120,6 +120,10 @@
 #include <QLineEdit>
 #include <QResizeEvent>
 
+#ifndef DEFAULT_BROWSER_AGENT
+#define DEFAULT_BROWSER_AGENT       "Greuceanu browser 1.0"
+#endif //!DEFAULT_BROWSER_AGENT
+
 #ifndef PRINT_LOCATION
 #define PRINT_LOCATION qDebug() << __FILE__ << ": " << __LINE__ << " -> " << __FUNCTION__
 #endif // PRINT_LOCATION
@@ -248,6 +252,62 @@
     }
 
 #endif // !IMPLEMENT_SINGLETON
+
+class IJsonInterface
+{
+    public:
+        virtual ~IJsonInterface(){}
+
+        virtual void read(const QJsonObject &json) = 0;
+        virtual void write(QJsonObject &json)const = 0;
+};
+
+
+namespace Core
+{
+    enum class JSonNameIds{
+        // User agent names
+        AgentId = 0,
+        AgentAlias,
+        AgentBrowserAgent,
+
+        // Proxy names
+        ProxyId,
+        ProxyAddress,
+        ProxyUserName,
+        ProxyUserPass,
+        ProxyPort,
+        PorxyLastChecked,
+        ProxyLastStatus,
+        ProxyLastStatusDescription,
+        ProxyTestUrl,
+
+        // User information
+        UserId,
+        UserName,
+        UserPassword,
+        UserFirstName,
+        UserLastName,
+
+        // Page info
+        PageId,
+        PageName,
+        PageUrl,
+        PageProxyId,
+        PageProxyEnabled,
+        PageAgentId,
+        PageSessionId,
+
+        // Session info
+        SessionId,
+        SessionName,
+        SessionPages
+    };
+
+    static QMap<JSonNameIds, QString> JSonNames = QMap<JSonNameIds, QString>();
+    void initializeJSonNames();
+}
+
 
 namespace Core
 {

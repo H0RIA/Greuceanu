@@ -22,6 +22,26 @@ User::User(const User& user)
 
 User::~User(){}
 
+void
+User::read(const QJsonObject &json)
+{
+    m_Id = QUuid::fromRfc4122(json[Core::JSonNames[Core::JSonNameIds::UserId]].toString().toLocal8Bit());
+    m_UName = json[Core::JSonNames[Core::JSonNameIds::UserName]].toString();
+    m_Password = json[Core::JSonNames[Core::JSonNameIds::UserPassword]].toString();
+    m_FirstName = json[Core::JSonNames[Core::JSonNameIds::UserFirstName]].toString();
+    m_LastName = json[Core::JSonNames[Core::JSonNameIds::UserLastName]].toString();
+}
+
+void
+User::write(QJsonObject &json)const
+{
+    json[Core::JSonNames[Core::JSonNameIds::UserId]] = QString(m_Id.toRfc4122());
+    json[Core::JSonNames[Core::JSonNameIds::UserName]] = m_UName;
+    json[Core::JSonNames[Core::JSonNameIds::UserPassword]] = m_Password;
+    json[Core::JSonNames[Core::JSonNameIds::UserFirstName]] = m_FirstName;
+    json[Core::JSonNames[Core::JSonNameIds::UserLastName]] = m_LastName;
+}
+
 User&
 User::operator=(const User& user)
 {

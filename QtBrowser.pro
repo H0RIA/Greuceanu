@@ -50,7 +50,9 @@ SOURCES += main.cpp\
     ui/sidemenu/menu_settings.cpp \
     data/agent.cpp \
     data/user.cpp \
-    data/proxy_checker.cpp
+    data/proxy_checker.cpp \
+    base.cpp \
+    data/session.cpp
 
 HEADERS  += \
     base.h \

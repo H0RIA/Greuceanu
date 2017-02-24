@@ -103,6 +103,45 @@ Proxy::setLastStatus(ProxyStatus status)
     }
 }
 
+void
+Proxy::read(const QJsonObject &json)
+{
+    m_Id = QUuid();
+    m_Address.clear();
+    m_LastStatusDescription.clear();
+    m_TestUrl.clear();
+    m_UserName.clear();
+    m_UserPass.clear();
+    m_Port = 0;
+    m_LastCheck = QDateTime();
+    m_LastStatus = ProxyStatus::Unknown;
+
+    if(json.isEmpty())
+        return;
+
+    m_Id = QUuid::fromRfc4122(json[Core::JSonNames[Core::JSonNameIds::ProxyId]].toString().toLocal8Bit());
+    m_Address = json[Core::JSonNames[Core::JSonNameIds::ProxyAddress]].toString();
+    m_LastStatusDescription = json[Core::JSonNames[Core::JSonNameIds::ProxyLastStatusDescription]].toString();
+    m_TestUrl = json[Core::JSonNames[Core::JSonNameIds::ProxyTestUrl]].toString();
+    m_UserName = json[Core::JSonNames[Core::JSonNameIds::ProxyUserName]].toString();
+    m_UserPass = json[Core::JSonNames[Core::JSonNameIds::ProxyUserPass]].toString();
+    m_Port = json[Core::JSonNames[Core::JSonNameIds::ProxyPort]].toInt();
+    m_LastStatus = Data::ProxyStatus(json[Core::JSonNames[Core::JSonNameIds::ProxyLastStatus]].toInt());
+}
+
+void
+Proxy::write(QJsonObject &json)const
+{
+    json[Core::JSonNames[Core::JSonNameIds::ProxyId]] = QString(m_Id.toRfc4122());
+    json[Core::JSonNames[Core::JSonNameIds::ProxyAddress]] = m_Address;
+    json[Core::JSonNames[Core::JSonNameIds::ProxyLastStatusDescription]] = m_LastStatusDescription;
+    json[Core::JSonNames[Core::JSonNameIds::ProxyTestUrl]] = m_TestUrl;
+    json[Core::JSonNames[Core::JSonNameIds::ProxyUserName]] = m_UserName;
+    json[Core::JSonNames[Core::JSonNameIds::ProxyUserPass]] = m_UserPass;
+    json[Core::JSonNames[Core::JSonNameIds::ProxyPort]] = m_Port;
+    json[Core::JSonNames[Core::JSonNameIds::ProxyLastStatus]] = (int)m_LastStatus;
+}
+
 Proxy&
 Proxy::operator=(const Proxy& proxy)
 {

@@ -75,7 +75,7 @@ ProxyChecker::testNextProxy()
     m_pNetworkAccessMgr->setProxy(qProxy);
 
     QNetworkRequest request(QUrl(proxy->_Proxy.TestUrl()));
-    request.setRawHeader("User-Agent", "Proxy checker 1.0");
+    request.setRawHeader("User-Agent", DEFAULT_BROWSER_AGENT);
 
     QNetworkReply* pReply = m_pNetworkAccessMgr->get(request);
     pReply->ignoreSslErrors();

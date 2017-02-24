@@ -30,7 +30,6 @@
 #define DEFAULT_TEST_URL        "https://www.google.com"
 #define DEFAULT_PROXY_TIMEOUT   5000 // milliseconds
 
-//Q_NAMESPACE(Data)
 namespace Data
 {
     enum class ProxyStatus
@@ -42,7 +41,7 @@ namespace Data
     };
 
 
-    class Proxy : public QObject
+    class Proxy : public QObject, IJsonInterface
     {
         Q_OBJECT
 
@@ -66,6 +65,9 @@ namespace Data
 
             ProxyStatus LastStatus()const;
             void setLastStatus(ProxyStatus status);
+
+            void read(const QJsonObject &json) override;
+            void write(QJsonObject &json)const override;
 
             Proxy& operator=(const Proxy& proxy);
             bool operator==(const Proxy& proxy)const;
