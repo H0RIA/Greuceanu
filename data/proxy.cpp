@@ -119,7 +119,7 @@ Proxy::read(const QJsonObject &json)
     if(json.isEmpty())
         return;
 
-    m_Id = QUuid::fromRfc4122(json[Core::JSonNames[Core::JSonNameIds::ProxyId]].toString().toLocal8Bit());
+    m_Id = QUuid(json[Core::JSonNames[Core::JSonNameIds::ProxyId]].toString());
     m_Address = json[Core::JSonNames[Core::JSonNameIds::ProxyAddress]].toString();
     m_LastStatusDescription = json[Core::JSonNames[Core::JSonNameIds::ProxyLastStatusDescription]].toString();
     m_TestUrl = json[Core::JSonNames[Core::JSonNameIds::ProxyTestUrl]].toString();
@@ -132,7 +132,7 @@ Proxy::read(const QJsonObject &json)
 void
 Proxy::write(QJsonObject &json)const
 {
-    json[Core::JSonNames[Core::JSonNameIds::ProxyId]] = QString(m_Id.toRfc4122());
+    json[Core::JSonNames[Core::JSonNameIds::ProxyId]] = m_Id.toString();
     json[Core::JSonNames[Core::JSonNameIds::ProxyAddress]] = m_Address;
     json[Core::JSonNames[Core::JSonNameIds::ProxyLastStatusDescription]] = m_LastStatusDescription;
     json[Core::JSonNames[Core::JSonNameIds::ProxyTestUrl]] = m_TestUrl;

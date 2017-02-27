@@ -53,7 +53,7 @@ Session::findPage(const QUuid& pageId)
 void
 Session::read(const QJsonObject &json)
 {
-    m_Id = QUuid::fromRfc4122(json[Core::JSonNames[Core::JSonNameIds::SessionId]].toString().toLocal8Bit());
+    m_Id = QUuid(json[Core::JSonNames[Core::JSonNameIds::SessionId]].toString());
     m_Name = json[Core::JSonNames[Core::JSonNameIds::SessionName]].toString();
 
     QJsonArray jsonPages = json[Core::JSonNames[Core::JSonNameIds::SessionPages]].toArray();
@@ -72,7 +72,7 @@ Session::read(const QJsonObject &json)
 void
 Session::write(QJsonObject &json)const
 {
-    json[Core::JSonNames[Core::JSonNameIds::SessionId]] = QString(m_Id.toRfc4122());
+    json[Core::JSonNames[Core::JSonNameIds::SessionId]] = m_Id.toString();
     json[Core::JSonNames[Core::JSonNameIds::SessionName]] = m_Name;
 
     QJsonArray pages;

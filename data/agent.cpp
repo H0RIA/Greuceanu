@@ -28,7 +28,7 @@ Agent::read(const QJsonObject &json)
     if(json.isEmpty())
         return;
 
-    m_Id = QUuid::fromRfc4122(json[Core::JSonNames[Core::JSonNameIds::AgentId]].toString().toLocal8Bit());
+    m_Id = QUuid(json[Core::JSonNames[Core::JSonNameIds::AgentId]].toString());
     m_Alias = json[Core::JSonNames[Core::JSonNameIds::AgentAlias]].toString();
     m_BrowserAgent = json[Core::JSonNames[Core::JSonNameIds::AgentAlias]].toString();
 }
@@ -36,7 +36,7 @@ Agent::read(const QJsonObject &json)
 void
 Agent::write(QJsonObject &json)const
 {
-    json[Core::JSonNames[Core::JSonNameIds::AgentId]] = QString(m_Id.toRfc4122());
+    json[Core::JSonNames[Core::JSonNameIds::AgentId]] = m_Id.toString();
     json[Core::JSonNames[Core::JSonNameIds::AgentAlias]] = m_Alias;
     json[Core::JSonNames[Core::JSonNameIds::AgentBrowserAgent]] = m_BrowserAgent;
 }

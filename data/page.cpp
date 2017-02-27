@@ -40,25 +40,25 @@ Page::~Page(){}
 void
 Page::read(const QJsonObject &json)
 {
-    m_Id = QUuid::fromRfc4122(json[Core::JSonNames[Core::JSonNameIds::PageId]].toString().toLocal8Bit());
+    m_Id = QUuid(json[Core::JSonNames[Core::JSonNameIds::PageId]].toString());
     m_Name = json[Core::JSonNames[Core::JSonNameIds::PageName]].toString();
     m_Url = json[Core::JSonNames[Core::JSonNameIds::PageUrl]].toString();
-    m_ProxyId = QUuid::fromRfc4122(json[Core::JSonNames[Core::JSonNameIds::PageProxyId]].toString().toLocal8Bit());
+    m_ProxyId = QUuid(json[Core::JSonNames[Core::JSonNameIds::PageProxyId]].toString());
     m_ProxyEnabled = json[Core::JSonNames[Core::JSonNameIds::PageProxyEnabled]].toBool();
-    m_AgentId = QUuid::fromRfc4122(json[Core::JSonNames[Core::JSonNameIds::PageAgentId]].toString().toLocal8Bit());
-    m_SessionId = QUuid::fromRfc4122(json[Core::JSonNames[Core::JSonNameIds::PageSessionId]].toString().toLocal8Bit());
+    m_AgentId = QUuid(json[Core::JSonNames[Core::JSonNameIds::PageAgentId]].toString());
+    m_SessionId = QUuid(json[Core::JSonNames[Core::JSonNameIds::PageSessionId]].toString());
 }
 
 void
 Page::write(QJsonObject &json)const
 {
-    json[Core::JSonNames[Core::JSonNameIds::PageId]] = QString(m_Id.toRfc4122());
+    json[Core::JSonNames[Core::JSonNameIds::PageId]] = m_Id.toString();
     json[Core::JSonNames[Core::JSonNameIds::PageName]] = m_Name;
     json[Core::JSonNames[Core::JSonNameIds::PageUrl]] = m_Url;
-    json[Core::JSonNames[Core::JSonNameIds::PageProxyId]] = QString(m_ProxyId.toRfc4122());
+    json[Core::JSonNames[Core::JSonNameIds::PageProxyId]] = m_ProxyId.toString();
     json[Core::JSonNames[Core::JSonNameIds::PageProxyEnabled]] = m_ProxyEnabled;
-    json[Core::JSonNames[Core::JSonNameIds::PageAgentId]] = QString(m_AgentId.toRfc4122());
-    json[Core::JSonNames[Core::JSonNameIds::PageSessionId]] = QString(m_SessionId.toRfc4122());
+    json[Core::JSonNames[Core::JSonNameIds::PageAgentId]] = m_AgentId.toString();
+    json[Core::JSonNames[Core::JSonNameIds::PageSessionId]] = m_SessionId.toString();
 }
 
 Page&
