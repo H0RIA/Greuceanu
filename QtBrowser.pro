@@ -16,7 +16,7 @@ macx:LIBS -= -lcrypto -lssl
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = QtBrowser
+TARGET = GBrowse
 TEMPLATE = app
 
 
